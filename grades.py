@@ -1,39 +1,32 @@
-#Puts grade information from http://abi.ausdk12.org/abi/GradebookSummary.asp into dictionaries and prints it
-#!/usr/bin/python
-#Library containing functions fromTo and loadFile (see file for descriptions)
 import locallib
-#Regular expression library
-import re
-def run():
-	#BS object for saved page
-	grades_html = locallib.loadFile("GradebookSummary.asp")
-	#List for grades
-	grades = ["Unused"]
-	#Initializes grades being from a prior term to false
+#Returns grades in a list of dictionaries
+def getGrades(grades_file):
+	html = locallib.loadFile(grades_file)
+	html_table = getGradesTable(html)
+	table = locallib.getTable(html_table)
+	grades = []
 	prior_term = "False"
-	#Iterates through each tr in file
-	for row in grades_html.find_all("tr"):
-		#Finds start of prior term grades
-		if (str(row.get("class")) != "None" and row.get("class")[0] == "HeaderRowBold" and row.get_text() == "Prior Terms"):
+	i = 0
+	for row in table["rows"]:
+		if (row["cells"][0]["text"] == "Prior Terms"):
+			print "Found Prior Term"
 			prior_term = "True"
-		#Pulls grade information from each td with grade information
-		if (str(row.get("onclick")) != "None" and str(re.search("window.location = 'GradebookStuScores.asp", row.get("onclick")[0])) == "None"):
+		elif (locallib.attrContains(row["attributes"], "class", "NormalClickableRow")):
+			print "Found Grade"
 			grades.append({})
-			#Table entries in order left to right
-			table_entries = ["Details", "Gradebook", "Term", "Period", "Teacher", "Grade Percentage", "Grade", "Missing Assignments", "Last Updated", "Status"]
-			i = 0
-			#Iterates over each td in assignments, adding them by table_entries name to a dictionary in grades
-			for entry in row.find_all("td"):
-				if (table_entries[i] == "Details"):
-					grades[len(grades)-1][table_entries[i]] = entry.find("a").get("href")
-				else:
-					grades[len(grades)-1][table_entries[i]] = entry.get_text()
-				i += 1
-			grades[len(grades)-1]["Prior Term"] = prior_term
-	#Prints contents of grades (for testing purposes)
-	for item1 in grades:
-		if (item1 == "Unused"):
-			continue
-		for item2 in item1:
-			print item2 + ": " + item1[item2]
-run()
+			grades[i]["Details"] = row["cells"][0]["links"][0]["link"]
+			grades[i]["Gradebook"] = row["cells"][1]["text"]
+			grades[i]["Term"] = row["cells"][2]["text"]
+			grades[i]["Period"] = row["cells"][3]["text"]
+			grades[i]["Teacher"] = row["cells"][4]["text"]
+			grades[i]["Grade Percentage"] = row["cells"][5]["text"]
+			grades[i]["Grade"] = row["cells"][6]["text"]
+			grades[i]["Missing Assignments"] = row["cells"][7]["text"]
+			grades[i]["Last Updated"] = row["cells"][8]["text"]
+			grades[i]["Status"] = row["cells"][9]["text"]
+			grades[i]["Prior Term"] = prior_term
+			i += 1
+	return grades
+
+def getGradesTable(html):
+	return html.find("table", bordercolor="White")

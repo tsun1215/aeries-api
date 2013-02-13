@@ -13,9 +13,68 @@ def fromTo(from_str,to_str,string):
 	else:
 		end = len(string)
 	return string[start:end]
-#Returns BS object from file_name file
+
+#Returns BS object from html file named
 def loadFile(file_name):
 	from bs4 import BeautifulSoup
 	f = open(file_name, 'r')
 	soup = BeautifulSoup(f.read())
 	return soup
+
+#Print items from an array of dictionaries
+def printDictionaries(dictionaries):
+	for item1 in dictionaries:
+		for item2 in item1:
+			print item2 + ": " + item1[item2]
+
+#Get table rows (tr) from html file named
+def getTableRows(file_name):
+	soup = loadFile(file_name)
+	return soup.find_all("tr")
+
+#Checks whether an elements attribute contains the given phrase
+def attrContains(tag, attribute, phrase):
+	import re
+	if (attribute in tag):
+		if (type(tag[attribute]) == list):
+			tag_value = tag[attribute][0]
+		else:
+			tag_value = str(tag[attribute])
+	else:
+		tag_value = "None"
+	return (str(re.search(phrase, tag_value)) != "None")
+
+#Returns the elements of the given row between the start and end elements of row_entries
+def getRowContents(row, row_entries, start_element, end_element):
+	elements = {}
+	i = -1
+	for entry in row.find_all("td"):
+		i += 1
+		if (i < start_element):
+			continue
+		if (i > end_element):
+			break
+		print "I: " + str(i)
+		elements[row_entries[i]] = entry.get_text()
+	return elements
+
+#Returns a 3-dimensional list of table elements, position 0 of all is occupied by a dictionary of attributes (see below)
+#(list) table: (dict) attributes
+#              (list) rows      : (dict) attributes
+#                                 (list) cells     : (dict) attributes
+#                                                    (str)  text
+#                                                    (list) links     : (dict) attributes
+#                                                                       (str) link	
+def getTable(html_table):
+	table = {"attributes": html_table.attrs, "rows": []}
+	i = 0
+	for row in html_table.find_all("tr"):
+		table["rows"].append({"attributes": row.attrs, "cells": []})
+		j = 0
+		for item in row.find_all("td"):
+			table["rows"][i]["cells"].append({"attributes": item.attrs, "text": item.get_text(), "links": []})
+			for link in item.find_all("a"):
+				table["rows"][i]["cells"][j]["links"].append({"attributes": link.attrs, "link": link.get("href")})
+			j += 1
+		i += 1
+	return table

@@ -27,11 +27,6 @@ def printDictionaries(dictionaries):
 		for item2 in item1:
 			print item2 + ": " + item1[item2]
 
-#Get table rows (tr) from html file named
-def getTableRows(file_name):
-	soup = loadFile(file_name)
-	return soup.find_all("tr")
-
 #Checks whether an elements attribute contains the given phrase
 def attrContains(tag, attribute, phrase):
 	import re
@@ -43,20 +38,6 @@ def attrContains(tag, attribute, phrase):
 	else:
 		tag_value = "None"
 	return (str(re.search(phrase, tag_value)) != "None")
-
-#Returns the elements of the given row between the start and end elements of row_entries
-def getRowContents(row, row_entries, start_element, end_element):
-	elements = {}
-	i = -1
-	for entry in row.find_all("td"):
-		i += 1
-		if (i < start_element):
-			continue
-		if (i > end_element):
-			break
-		print "I: " + str(i)
-		elements[row_entries[i]] = entry.get_text()
-	return elements
 
 #Returns a 3-dimensional list of table elements, position 0 of all is occupied by a dictionary of attributes (see below)
 #(list) table: (dict) attributes

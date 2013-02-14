@@ -1,4 +1,5 @@
 import locallib
+import re
 #Returns grades in a list of dictionaries
 def getGrades(grades_file):
 	html = locallib.loadFile(grades_file)
@@ -8,11 +9,9 @@ def getGrades(grades_file):
 	prior_term = "False"
 	i = 0
 	for row in table["rows"]:
-		if (row["cells"][0]["text"] == "Prior Terms"):
-			print "Found Prior Term"
+		if (len(row["cells"]) != 0 and "text" in row["cells"][0] and row["cells"][0]["text"] == "Prior Terms"):
 			prior_term = "True"
 		elif (locallib.attrContains(row["attributes"], "class", "NormalClickableRow")):
-			print "Found Grade"
 			grades.append({})
 			grades[i]["Details"] = row["cells"][0]["links"][0]["link"]
 			grades[i]["Gradebook"] = row["cells"][1]["text"]

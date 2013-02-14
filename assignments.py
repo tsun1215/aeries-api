@@ -16,7 +16,6 @@ def getAssignments(assignments_file):
 					assignments[ass_num]["Long Description"] = row["cells"][0]["text"]
 				#A rows
 				else:
-					#Assignment Number (from tr id)
 					ass_num = int(locallib.fromTo("Row","",row["attributes"]["id"])) - 1
 					assignments.append({})
 					assignments[ass_num]["Period"] = row["cells"][0]["text"]

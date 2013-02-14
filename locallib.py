@@ -59,3 +59,8 @@ def getTable(html_table):
 			j += 1
 		i += 1
 	return table
+
+#Returns the JSON representation of the python_hierachy
+def toJSON(python_hierachy):
+	import json
+	return json.dumps(python_hierachy, sort_keys=True, indent=4, separators=(',', ': '))

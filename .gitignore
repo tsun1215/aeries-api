@@ -1,3 +1,6 @@
+# Reminents of running proj
+*.asp
+
 *.py[cod]
 
 # C extensions

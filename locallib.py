@@ -51,7 +51,7 @@ def attrContains(tag, attribute, phrase):
 #                                 (list) cells     : (dict) attributes
 #                                                    (str)  text
 #                                                    (list) links     : (dict) attributes
-#                                                                       (str) link  
+#                                                                       (str) link
 def getTable(html_table):
     table = {"attributes": html_table.attrs, "rows": []}
     i = 0
@@ -69,5 +69,8 @@ def getTable(html_table):
 
 #Returns the JSON representation of the python_hierachy
 def toJSON(python_hierachy):
-    import json
+    try:
+        import simplejson as json
+    except ImportError:
+        import json
     return json.dumps(python_hierachy, sort_keys=True, indent=4, separators=(',', ': '))
